@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('guest_books', function (Blueprint $table) {
+            $table->enum('jenis_layanan', ['pst', 'ppid'])
+                  ->nullable()
+                  ->after('email')
+                  ->comment('PST: Pelayanan Statistik Terpadu, PPID: Pejabat Pengelola Informasi dan Dokumentasi');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('guest_books', function (Blueprint $table) {
+            $table->dropColumn('jenis_layanan');
+        });
+    }
+};
