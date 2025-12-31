@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import laravel from "laravel-vite-plugin";
-import filament from "filament/support/vite";
+import filament from "@filament/support/vite";
 
 export default defineConfig({
     plugins: [
