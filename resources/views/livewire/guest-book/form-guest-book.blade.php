@@ -12,24 +12,23 @@
     <!-- ========================= -->
     <div class="mb-6 text-center">
         @if($this->isFromWhatsApp)
+
+        <!-- akses dari wa -->
         <div
-            class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg">
-            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                <path
-                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.76.982.998-3.675-.236-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.9 6.994c-.004 5.45-4.438 9.88-9.888 9.88m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.333.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.333 11.893-11.893 0-3.18-1.24-6.162-3.495-8.411" />
-            </svg>
-            <span class="font-bold">📱 Akses dari WhatsApp</span>
-            <span class="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded-full">Via Link</span>
+            class="inline-flex items-center justify-center gap-3 px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg">
+
+            <i class="fa-brands fa-whatsapp text-lg"></i>
+            <span class="font-bold">Akses dari WhatsApp</span>
+
         </div>
         @else
-        <div
-            class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
-            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                <path
-                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
-            </svg>
-            <span class="font-bold">🌐 Akses Langsung Web</span>
-            <span class="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded-full">Langsung</span>
+        <div class="inline-flex items-center justify-center gap-3 px-4 py-2 rounded-lg
+bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
+
+            <i class="fa-solid fa-globe text-lg"></i>
+
+            <span class="font-bold">Akses Langsung Web</span>
+
         </div>
         @endif
     </div>
@@ -105,10 +104,19 @@
                 </div>
 
                 {{-- No HP --}}
-                <div class="py-3 sm:py-6">
-                    <livewire:components.text-input colorText="text-grey" type="tel" label="No HP" name="no_hp"
-                        wire:model="no_hp" placeholder="081234567890" pattern="[0-9]*" inputmode="numeric" />
+                <div class="py-3 sm:py-6 flex flex-col items-center">
+                    <div class="w-full max-w-md">
+                        <livewire:components.text-input colorText="text-grey" type="tel" label="No HP" name="no_hp"
+                            wire:model.live="no_hp" placeholder="081234567890" pattern="[0-9]*" inputmode="numeric" />
+
+                        @error('no_hp')
+                        <p class="text-red-500 text-sm mt-1 text-center">
+                            {{ $message }}
+                        </p>
+                        @enderror
+                    </div>
                 </div>
+
 
                 <div class="py-3 sm:py-6">
                     <livewire:components.text-input colorText="text-grey" label="Email" name="email"
@@ -142,8 +150,8 @@
                                             Ingin memilih jenis layanan? Gunakan link WhatsApp.
                                         </p>
                                     </div> -->
-                                    <!-- Hidden input untuk NULL value -->
-                                    <!-- <input type="hidden" name="jenis_layanan" wire:model="jenis_layanan" />
+                <!-- Hidden input untuk NULL value -->
+                <!-- <input type="hidden" name="jenis_layanan" wire:model="jenis_layanan" />
                                 </div>
                             </div>
                         </div>
@@ -283,80 +291,73 @@
     <!-- MODAL NOMOR ANTRIAN DENGAN BADGE WEB/WA -->
     <!-- ========================= -->
     @if($showModal)
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 print-area">
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay print-area">
         <div class="relative w-full max-w-xs mx-auto animate-scale-in">
-            <div class="bg-white rounded-lg shadow-xl overflow-hidden">
+            <div class="modal-card">
 
                 <!-- ================= HEADER ================= -->
-                <div class="px-4 py-3 bg-gradient-to-r 
-                @if($this->isFromWhatsApp) from-green-500 to-green-600
-                @else from-yellow-500 to-yellow-600
-                @endif text-center relative">
+                <div class="modal-header
+                {{ $this->isFromWhatsApp ? 'modal-wa' : 'modal-web' }}">
 
                     <!-- Badge Source -->
-                    <div class="absolute top-2 right-2">
-                        <div class="flex items-center px-2 py-1 bg-white/20 rounded-full">
-                            <span class="text-xs font-bold text-white">
-                                {{ $this->isFromWhatsApp ? 'WA' : 'WEB' }}
-                            </span>
-                        </div>
+                    <div class="modal-badge">
+                        {{ $this->isFromWhatsApp ? 'WA' : 'WEB' }}
                     </div>
 
-                    <h3 class="text-lg font-bold text-black">
+                    <h3 class="modal-title">
                         Pendaftaran {{ $this->isFromWhatsApp ? 'WhatsApp' : 'Web' }}
                     </h3>
                 </div>
 
                 <!-- ================= BODY ================= -->
-                <div class="px-4 py-5 text-center">
+                <div class="modal-body">
 
-                    <p class="text-xs text-gray-500 mb-2">
-                        {{ $this->isFromWhatsApp ? '📱 NOMOR ANTRIAN WHATSAPP ANDA' : '🌐 NOMOR ANTRIAN WEB ANDA' }}
+                    <p class="modal-subtitle flex items-center justify-center gap-2 text-center">
+                        @if ($this->isFromWhatsApp)
+                        <i class="fa-brands fa-whatsapp"></i>
+                        <span>NOMOR ANTRIAN WHATSAPP ANDA</span>
+                        @else
+                        <i class="fa-solid fa-globe"></i>
+                        <span>NOMOR ANTRIAN WEB ANDA</span>
+                        @endif
                     </p>
 
                     <!-- Nomor Antrian -->
-                    <div class="mb-4">
-                        <div class="inline-block bg-gray-900 rounded-lg px-4 py-3 border-2
-                        {{ $this->isFromWhatsApp ? 'border-green-500' : 'border-yellow-500' }}">
-                            <span class="text-4xl font-black
-                            {{ $this->isFromWhatsApp ? 'text-yellow-400' : 'text-yellow-400' }}">
-                                {{ $nomorAntrian ? sprintf('%03d', $nomorAntrian) : '000' }}
-                            </span>
+                    <div class="queue-wrapper">
+                        <div class="queue-box">
+                            {{ $nomorAntrian ? sprintf('%03d', $nomorAntrian) : '000' }}
                         </div>
                     </div>
 
                     <!-- Waktu -->
-                    <p class="text-xs text-gray-500 mb-4">
-                        ⏰ {{ now()->format('H:i') }} • {{ now()->format('d/m/Y') }}
+                    <p class="modal-time">
+                        <i class="fa-regular fa-clock"></i>
+
+                        {{ now()->format('H:i') }} • {{ now()->format('d/m/Y') }}
                     </p>
 
                     <!-- Info -->
-                    <div class="p-2 rounded border text-xs
-                    {{ $this->isFromWhatsApp ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200' }}">
-                        <p class="text-gray-700">
-                            <b>Pendaftaran berhasil!</b><br>
-                            Silakan menunggu panggilan petugas
-                        </p>
+                    <div class="modal-info">
+                        <b>Pendaftaran berhasil!</b><br>
+                        Silakan menunggu panggilan petugas
                     </div>
                 </div>
 
                 <!-- ================= FOOTER ================= -->
-                <div class="px-4 py-3 bg-gray-50 border-t">
+                <div class="modal-footer">
 
-                    <!-- Tombol Print -->
-                    <button onclick="window.print()" type="button" class="print-hidden w-full py-2.5 mb-2 text-gray-700 font-bold rounded-md 
-                    bg-white border border-gray-300 hover:bg-gray-100">
-                        ⬇️ Unduh Bukti Pendaftaran
+                    <button onclick="window.print()" type="button" class="btn btn-outline print-hidden flex items-center justify-center gap-2
+           text-blue-600 border-blue-600 hover:bg-blue-600 hover:text-white">
+
+                        <i class="fa-solid fa-download"></i>
+                        Unduh Bukti Pendaftaran
                     </button>
 
-                    <!-- Tombol Kembali -->
-                    <button onclick="window.location.href='/'" type="button"
-                        class="print-hidden bg-lightYellow w-full py-2.5 text-black  rounded-md 
-                    {{ $this->isFromWhatsApp ? 'bg-lightYellow hover:bg-lightYellow/80' : 'bg-yellow-500 hover:bg-yellow-600' }}">
+                    <button onclick="window.location.href='/'" type="button" class="btn btn-primary print-hidden">
                         Kembali ke Halaman Utama
                     </button>
 
-                    <p class="mt-2 text-center text-[10px] text-gray-400">
+                    <p class="modal-footer-text">
                         Sistem Buku Tamu Digital • BPS
                     </p>
                 </div>
@@ -364,25 +365,157 @@
         </div>
     </div>
 
-    <!-- ================= STYLE ================= -->
+    <!-- ================= FULL CSS ================= -->
     <style>
+        /* ================= OVERLAY ================= */
+        .modal-overlay {
+            background: rgba(15, 23, 42, 0.85);
+        }
+
+        /* ================= CARD ================= */
+        .modal-card {
+            background: #0f172a;
+            color: #e5e7eb;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        /* ================= HEADER ================= */
+        .modal-header {
+            position: relative;
+            padding: 14px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .modal-wa {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+        }
+
+        .modal-web {
+            background: linear-gradient(135deg, #facc15, #ca8a04);
+            color: #1f2937;
+        }
+
+        .modal-title {
+            font-size: 15px;
+            letter-spacing: 0.05em;
+        }
+
+        /* Badge */
+        .modal-badge {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        /* ================= BODY ================= */
+        .modal-body {
+            padding: 18px;
+            text-align: center;
+        }
+
+        .modal-subtitle {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .queue-wrapper {
+            margin: 14px 0;
+        }
+
+        .queue-box {
+            display: inline-block;
+            background: #020617;
+            border: 2px solid #facc15;
+            color: #fde047;
+            font-size: 42px;
+            font-weight: 900;
+            padding: 12px 22px;
+            border-radius: 14px;
+            letter-spacing: 6px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-time {
+            font-size: 11px;
+            opacity: 0.75;
+            margin-bottom: 14px;
+        }
+
+        /* Info */
+        .modal-info {
+            background: #020617;
+            border-left: 4px solid #22c55e;
+            padding: 10px;
+            font-size: 12px;
+            border-radius: 8px;
+        }
+
+        /* ================= FOOTER ================= */
+        .modal-footer {
+            background: #020617;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .modal-footer-text {
+            font-size: 10px;
+            opacity: 0.5;
+            margin-top: 8px;
+        }
+
+        /* ================= BUTTON ================= */
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #facc15, #ca8a04);
+            color: #1f2937;
+            border: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #64748b;
+            color: #e5e7eb;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        /* ================= ANIMATION ================= */
         .animate-scale-in {
-            animation: scale-in 0.2s ease-out;
+            animation: scale-in 0.25s ease-out;
         }
 
         @keyframes scale-in {
-            0% {
+            from {
                 transform: scale(0.9);
                 opacity: 0;
             }
 
-            100% {
+            to {
                 transform: scale(1);
                 opacity: 1;
             }
         }
 
-        /* ========== PRINT ONLY MODAL ========== */
+        /* ================= PRINT (WARNA DIKUNCI) ================= */
         @media print {
             body * {
                 visibility: hidden;
@@ -391,13 +524,18 @@
             .print-area,
             .print-area * {
                 visibility: visible;
+
+                /* 🔒 PAKSA WARNA TETAP */
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
 
-            .print-area {
-                position: fixed;
-                inset: 0;
+            .modal-overlay {
                 background: white !important;
-                padding: 0 !important;
+            }
+
+            .modal-card {
+                box-shadow: none !important;
             }
 
             .print-hidden {
@@ -407,6 +545,8 @@
 
     </style>
     @endif
+
+
 
 
 </div>

@@ -178,7 +178,7 @@ class FormGuestBook extends Component
     }
 
     // =========================
-    // HELPER METHODS - DIUBAH
+    // HELPER METHODS 
     // =========================
     private function cleanFieldsByPekerjaan()
     {
@@ -257,7 +257,7 @@ class FormGuestBook extends Component
         ]);
         
         // Set nilai kembali
-        $this->jenis_layanan = null; // Kembali ke NULL
+        $this->jenis_layanan = null; 
     }
 
     // =========================

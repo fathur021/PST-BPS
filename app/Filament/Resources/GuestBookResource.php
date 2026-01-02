@@ -378,6 +378,7 @@ class GuestBookResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('created_at', 'desc') // <-- No urutkan berdasarkan yang terbaru
             ->actions([ActionGroup::make([ViewAction::make(), EditAction::make(), DeleteAction::make()])])
             ->bulkActions([BulkActionGroup::make([DeleteBulkAction::make()])])
             ->modifyQueryUsing(function (Builder $query) {
