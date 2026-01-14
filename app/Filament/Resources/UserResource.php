@@ -66,7 +66,14 @@ class UserResource extends Resource
                         ->native(false)
                         ->required(),
                     DatePicker::make('dob'),
-                    FileUpload::make('avatar_url')->directory('avatars')->visibility('public')->maxSize(5120)->label('Avatar')->image()->columnSpanFull(),
+                    FileUpload::make('avatar_url')
+                    ->disk('public')
+                    ->directory('avatars')
+                    ->visibility('public')
+                    ->maxSize(5120)
+                    ->label('Avatar')
+                    ->image()
+                    ->columnSpanFull(),
                 ])
                 ->columns(2),
         ]);

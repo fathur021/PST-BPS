@@ -6,12 +6,15 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "barryvdh/laravel-dompdf": "^3.1",
         "filament/filament": "3.2.57",
         "flowframe/laravel-trend": "^0.2.0",
         "joaopaulolndev/filament-edit-profile": "^1.0",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
-        "livewire/livewire": "^3.5",
+        "livewire/livewire": "3.4.9",
+        "openspout/openspout": "^4.28",
+        "phpoffice/phpspreadsheet": "^5.3",
         "spatie/laravel-permission": "*"
     },
     "require-dev": {
@@ -64,6 +67,9 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "audit": {
+            "block-insecure": false
         }
     },
     "minimum-stability": "stable",

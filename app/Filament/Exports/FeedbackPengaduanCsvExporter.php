@@ -2,25 +2,24 @@
 
 namespace App\Filament\Exports;
 
-use App\Models\Feedback;
-use App\Models\User;
+use App\Models\FeedbackPengaduan;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 
-class FeedbackExporter
+class FeedbackPengaduanCsvExporter
 {
     /**
-     * Export data Feedback ke CSV dengan format yang rapi dan urutan sesuai form
+     * Export data FeedbackPengaduan ke CSV
      */
     public static function export()
     {
         try {
             // Ambil data dengan relasi
-            $feedbacks = Feedback::with(['petugasPst', 'frontOffice'])
+            $feedbacks = FeedbackPengaduan::with(['petugasPengaduan'])
                 ->orderBy('created_at', 'desc')
                 ->get();
             
-            $filename = 'feedback_buku_tamu_' . date('Y-m-d_H-i-s') . '.csv';
+            $filename = 'feedback_pengaduan_' . date('Y-m-d_H-i-s') . '.csv';
             
             $headers = [
                 'Content-Type' => 'text/csv; charset=utf-8',
@@ -33,17 +32,15 @@ class FeedbackExporter
             $callback = function() use ($feedbacks) {
                 $file = fopen('php://output', 'w');
                 
-                // Tambah BOM untuk UTF-8 (agar Excel membaca dengan benar)
+                // Tambah BOM untuk UTF-8
                 fwrite($file, "\xEF\xBB\xBF");
                 
-                // Header CSV sesuai urutan form
+                // Header CSV
                 fputcsv($file, [
                     'ID',
                     'Nama Lengkap',
-                    'Petugas PST',
-                    'Rating PST (1-5)',
-                    'Front Office',
-                    'Rating Front Office (1-5)',
+                    'Petugas Pengaduan',
+                    'Rating Petugas (1-5)',
                     'Rating Sarana Prasarana (1-5)',
                     'Kritik & Saran',
                     'Tanggal Pengisian',
@@ -55,11 +52,9 @@ class FeedbackExporter
                     fputcsv($file, [
                         $feedback->id,
                         self::cleanString($feedback->nama_lengkap),
-                        self::cleanString(optional($feedback->petugasPst)->name),
-                        $feedback->kepuasan_petugas_pst,
-                        self::cleanString(optional($feedback->frontOffice)->name),
-                        $feedback->kepuasan_petugas_front_office,
-                        $feedback->kepuasan_sarana_prasarana,
+                        self::cleanString(optional($feedback->petugasPengaduan)->name),
+                        $feedback->kepuasan_petugas_pengaduan,
+                        $feedback->kepuasan_sarana_prasarana_pengaduan,
                         self::cleanString($feedback->kritik_saran, true),
                         $feedback->created_at ? $feedback->created_at->format('d-m-Y H:i:s') : '',
                         $feedback->updated_at ? $feedback->updated_at->format('d-m-Y H:i:s') : '',
@@ -69,12 +64,12 @@ class FeedbackExporter
                 fclose($file);
             };
             
-            Log::info('Feedback CSV export successful: ' . $feedbacks->count() . ' records exported');
+            Log::info('Feedback Pengaduan CSV export successful: ' . $feedbacks->count() . ' records exported');
             
             return Response::stream($callback, 200, $headers);
             
         } catch (\Exception $e) {
-            Log::error('Feedback CSV export failed: ' . $e->getMessage(), [
+            Log::error('Feedback Pengaduan CSV export failed: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
             
@@ -102,7 +97,7 @@ class FeedbackExporter
             $value = str_replace(["\r\n", "\n"], '  ', $value);
         } else {
             $value = preg_replace('/[\x00-\x1F\x7F]/u', '', $value);
-            $value = str_replace(["\r", "\n"], ' ', $value); // Ganti newline dengan spasi
+            $value = str_replace(["\r", "\n"], ' ', $value);
         }
         
         // Hapus tab dan spasi berlebih
@@ -118,20 +113,17 @@ class FeedbackExporter
     private static function exportSimple()
     {
         try {
-            $feedbacks = Feedback::select([
+            $feedbacks = FeedbackPengaduan::select([
                 'id',
                 'nama_lengkap',
-                'petugas_pst',
-                'kepuasan_petugas_pst',
-                'front_office',
-                'kepuasan_petugas_front_office',
-                'kepuasan_sarana_prasarana',
+                'kepuasan_petugas_pengaduan',
+                'kepuasan_sarana_prasarana_pengaduan',
                 'created_at'
             ])
             ->orderBy('created_at', 'desc')
             ->get();
             
-            $filename = 'feedback_simple_' . date('Y-m-d_H-i-s') . '.csv';
+            $filename = 'feedback_pengaduan_simple_' . date('Y-m-d_H-i-s') . '.csv';
             
             $headers = [
                 'Content-Type' => 'text/csv; charset=utf-8',
@@ -143,7 +135,7 @@ class FeedbackExporter
                 fwrite($file, "\xEF\xBB\xBF");
                 
                 fputcsv($file, [
-                    'ID', 'Nama Lengkap', 'Rating PST', 'Rating Front Office', 
+                    'ID', 'Nama Lengkap', 'Rating Petugas', 
                     'Rating Sarana Prasarana', 'Tanggal Pengisian'
                 ], ';');
                 
@@ -151,9 +143,8 @@ class FeedbackExporter
                     fputcsv($file, [
                         $feedback->id,
                         self::cleanString($feedback->nama_lengkap),
-                        $feedback->kepuasan_petugas_pst,
-                        $feedback->kepuasan_petugas_front_office,
-                        $feedback->kepuasan_sarana_prasarana,
+                        $feedback->kepuasan_petugas_pengaduan,
+                        $feedback->kepuasan_sarana_prasarana_pengaduan,
                         $feedback->created_at ? $feedback->created_at->format('d-m-Y H:i:s') : '',
                     ], ';');
                 }
@@ -161,12 +152,12 @@ class FeedbackExporter
                 fclose($file);
             };
             
-            Log::info('Simple Feedback CSV export successful: ' . $feedbacks->count() . ' records exported');
+            Log::info('Simple Feedback Pengaduan CSV export successful: ' . $feedbacks->count() . ' records exported');
             
             return Response::stream($callback, 200, $headers);
             
         } catch (\Exception $e) {
-            Log::error('Simple Feedback CSV export also failed: ' . $e->getMessage());
+            Log::error('Simple Feedback Pengaduan CSV export also failed: ' . $e->getMessage());
             
             // Kirim file error message
             return self::exportErrorMessage();
@@ -178,7 +169,7 @@ class FeedbackExporter
      */
     private static function exportErrorMessage()
     {
-        $filename = 'feedback_export_error_' . date('Y-m-d_H-i-s') . '.csv';
+        $filename = 'feedback_pengaduan_export_error_' . date('Y-m-d_H-i-s') . '.csv';
         
         $headers = [
             'Content-Type' => 'text/csv; charset=utf-8',
@@ -192,7 +183,7 @@ class FeedbackExporter
             fputcsv($file, ['Status', 'Pesan', 'Waktu'], ';');
             fputcsv($file, [
                 'ERROR',
-                'Terjadi kesalahan saat mengekspor data feedback. Silakan coba lagi atau hubungi administrator.',
+                'Terjadi kesalahan saat mengekspor data feedback pengaduan. Silakan coba lagi atau hubungi administrator.',
                 date('d-m-Y H:i:s')
             ], ';');
             

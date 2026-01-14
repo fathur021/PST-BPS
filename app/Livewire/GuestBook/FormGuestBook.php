@@ -5,21 +5,20 @@ namespace App\Livewire\GuestBook;
 use App\Models\GuestBook;
 use App\Models\Province;
 use App\Models\Regency;
+use Barryvdh\DomPDF\Facade\Pdf; // TAMBAHKAN
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
-use Livewire\WithFileUploads;
 use Livewire\Attributes\Url;
+use Livewire\WithFileUploads;
 
 class FormGuestBook extends Component
 {
     use WithFileUploads;
-
-    #[Url]
-    public $tamu_dari = 'web';
     
     #[Url]
-    public $jenis_layanan_param;
+    public $tamu_dari = 'web';
 
     // FORM PROPERTIES
     public $nama_lengkap;
@@ -38,17 +37,15 @@ class FormGuestBook extends Component
     public $alamat;
     public $tujuan_kunjungan = [];
     public $tujuan_kunjungan_lainnya;
-    public $bukti_identitas_diri_path;
-    public $dokumen_permintaan_informasi_publik_path;
-    
-    // SEKARANG BISA NULL/KOSONG!
-    public $jenis_layanan = null;
+    public $deskripsi;
+    public $ktp;
 
     public $showModal = false;
     public $nomorAntrian;
+    public $lastGuestId = null; // TAMBAHKAN untuk menyimpan ID terakhir
 
     // =========================
-    // VALIDATION RULES - DIUBAH
+    // VALIDATION RULES
     // =========================
     protected function rules()
     {
@@ -69,15 +66,9 @@ class FormGuestBook extends Component
             'provinsi_id' => 'required',
             'tujuan_kunjungan' => 'required|array|min:1',
             'tujuan_kunjungan_lainnya' => 'nullable|string',
-            'bukti_identitas_diri_path' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'dokumen_permintaan_informasi_publik_path' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'jenis_layanan' => 'nullable|string|max:50', // Bisa NULL!
+            'deskripsi' => 'nullable|string',
+            'ktp' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ];
-
-        // HANYA WhatsApp yang wajib pilih
-        if ($this->isFromWhatsApp()) {
-            $rules['jenis_layanan'] = 'required|in:pst,ppid';
-        }
 
         if (in_array('lainnya', $this->tujuan_kunjungan)) {
             $rules['tujuan_kunjungan_lainnya'] = 'required|string|max:255';
@@ -87,7 +78,7 @@ class FormGuestBook extends Component
     }
 
     // =========================
-    // MOUNT METHOD - SEDERHANA
+    // MOUNT METHOD
     // =========================
     public function mount()
     {
@@ -97,12 +88,6 @@ class FormGuestBook extends Component
         if (request()->has('tamu_dari')) {
             $this->tamu_dari = request()->query('tamu_dari');
         }
-        
-        // HANYA set nilai jika dari WhatsApp dengan parameter
-        if ($this->isFromWhatsApp() && request()->has('jenis_layanan')) {
-            $this->jenis_layanan = request()->query('jenis_layanan');
-        }
-        // Web langsung: biarkan NULL/kosong
     }
 
     // =========================
@@ -115,7 +100,7 @@ class FormGuestBook extends Component
     }
 
     // =========================
-    // SUBMIT FORM - DIUBAH
+    // SUBMIT FORM
     // =========================
     public function submit()
     {
@@ -129,9 +114,6 @@ class FormGuestBook extends Component
 
         // Bersihkan field berdasarkan pekerjaan
         $this->cleanFieldsByPekerjaan();
-
-        // Upload file
-        $uploadedFiles = $this->uploadFiles();
 
         // Siapkan data untuk disimpan
         $dataToSave = [
@@ -151,23 +133,31 @@ class FormGuestBook extends Component
             'alamat' => $this->alamat,
             'tujuan_kunjungan' => $this->tujuan_kunjungan,
             'tujuan_kunjungan_lainnya' => $this->tujuan_kunjungan_lainnya,
-            'bukti_identitas_diri_path' => $uploadedFiles['bukti_identitas'],
-            'dokumen_permintaan_informasi_publik_path' => $uploadedFiles['dokumen_formulir'],
-            'jenis_layanan' => $this->jenis_layanan, // Bisa NULL untuk web langsung
             'tamu_dari' => $this->tamu_dari,
+            'deskripsi' => $this->deskripsi,
         ];
+
+        // Upload file KTP jika ada
+        if ($this->ktp) {
+            $ktpPath = $this->ktp->store('ktp', 'public');
+            $dataToSave['ktp'] = $ktpPath;
+        }
 
         // Simpan ke database
         $guest = GuestBook::create($dataToSave);
         $guest->refresh();
 
+        // Simpan ID untuk PDF
+        $this->lastGuestId = $guest->id;
+        
+        // Set nomor antrian
         $this->nomorAntrian = $guest->nomor_antrian;
 
+        // Log info
         Log::info('Guest Book Created', [
             'id' => $guest->id,
             'nomor_antrian' => $guest->nomor_antrian,
             'tamu_dari' => $guest->tamu_dari,
-            'jenis_layanan' => $guest->jenis_layanan,
         ]);
 
         // Reset form
@@ -175,6 +165,56 @@ class FormGuestBook extends Component
 
         // Tampilkan modal
         $this->showModal = true;
+    }
+
+    // =========================
+    // DOWNLOAD PDF METHOD
+    // =========================
+    public function downloadPdf()
+    {
+        // Cari data tamu berdasarkan ID terakhir
+        $guest = GuestBook::find($this->lastGuestId);
+        
+        if (!$guest) {
+            // Fallback: cari yang terbaru
+            $guest = GuestBook::latest()->first();
+        }
+        
+        if (!$guest) {
+            session()->flash('error', 'Data tidak ditemukan');
+            return;
+        }
+        
+        // Data untuk PDF
+        $data = [
+            'source' => $guest->tamu_dari,
+            'nomorAntrian' => $guest->nomor_antrian,
+            'namaLengkap' => $guest->nama_lengkap,
+            'noHp' => $guest->no_hp,
+            'tujuanKunjungan' => $guest->tujuan_kunjungan,
+            'tujuanLainnya' => $guest->tujuan_kunjungan_lainnya,
+            'waktu' => $guest->created_at->format('H:i'),
+            'tanggal' => $guest->created_at->format('d/m/Y'),
+        ];
+        
+        try {
+            // Generate PDF
+            $pdf = Pdf::loadView('livewire.guest-book.pdf-ticket', $data);
+            
+            // Set ukuran kertas seperti struk (80mm width)
+            $pdf->setPaper([0, 0, 226.77, 500], 'portrait');
+            
+            // Download PDF
+            return response()->streamDownload(
+                function () use ($pdf) {
+                    echo $pdf->output();
+                },
+                'no Antrian-BPS Bukittinggi-' . sprintf('%03d', $guest->nomor_antrian) . '.pdf'
+            );
+        } catch (\Exception $e) {
+            session()->flash('error', 'Gagal membuat PDF: ' . $e->getMessage());
+            return null;
+        }
     }
 
     // =========================
@@ -212,26 +252,6 @@ class FormGuestBook extends Component
         }
     }
 
-    private function uploadFiles()
-    {
-        $uploads = [
-            'bukti_identitas' => null,
-            'dokumen_formulir' => null,
-        ];
-
-        if ($this->bukti_identitas_diri_path) {
-            $uploads['bukti_identitas'] = $this->bukti_identitas_diri_path
-                ->store('bukti-identitas', 'public');
-        }
-
-        if ($this->dokumen_permintaan_informasi_publik_path) {
-            $uploads['dokumen_formulir'] = $this->dokumen_permintaan_informasi_publik_path
-                ->store('dokumen-formulir/dokumen-permintaan-informasi-publik', 'public');
-        }
-
-        return $uploads;
-    }
-
     private function resetForm()
     {
         $this->reset([
@@ -251,13 +271,9 @@ class FormGuestBook extends Component
             'alamat',
             'tujuan_kunjungan',
             'tujuan_kunjungan_lainnya',
-            'bukti_identitas_diri_path',
-            'dokumen_permintaan_informasi_publik_path',
-            'jenis_layanan',
+            'deskripsi',
+            'ktp',
         ]);
-        
-        // Set nilai kembali
-        $this->jenis_layanan = null; 
     }
 
     // =========================
@@ -290,6 +306,7 @@ class FormGuestBook extends Component
     {
         $this->showModal = false;
         $this->nomorAntrian = null;
+        $this->lastGuestId = null;
     }
 
     public function render()

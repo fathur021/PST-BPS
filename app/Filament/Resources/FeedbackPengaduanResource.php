@@ -2,18 +2,15 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Exports\FeedbackPengaduanExporter;
 use App\Filament\Resources\FeedbackPengaduanResource\Pages;
-use App\Filament\Resources\FeedbackPengaduanResource\RelationManagers;
 use App\Models\FeedbackPengaduan;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\ExportAction;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Log;
 
 class FeedbackPengaduanResource extends Resource
 {
@@ -28,8 +25,6 @@ class FeedbackPengaduanResource extends Resource
     protected static ?string $navigationGroup = 'Pengaduan';
     
     protected static ?int $navigationSort = 6;
-
-
 
     public static function form(Form $form): Form
     {
@@ -85,12 +80,30 @@ class FeedbackPengaduanResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ])->headerActions([
-                ExportAction::make()
-                    ->exporter(FeedbackPengaduanExporter::class)
-                    ->label('Export')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->color('primary'),
+            ])
+            ->headerActions([
+                // TOMBOL EXPORT CSV
+                Action::make('exportCsv')
+                    ->label('Export CSV')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->action(function () {
+                        try {
+                            return \App\Filament\Exports\FeedbackPengaduanCsvExporter::export();
+                        } catch (\Exception $e) {
+                            Log::error('Export Feedback Pengaduan CSV failed: ' . $e->getMessage());
+                            
+                            // Notifikasi error
+                            return redirect()->back()->with([
+                                'error' => 'Export gagal: ' . $e->getMessage(),
+                            ]);
+                        }
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading('Export Feedback Pengaduan ke CSV')
+                    ->modalDescription('Apakah Anda yakin ingin mengekspor data feedback pengaduan ke format CSV?')
+                    ->modalSubmitActionLabel('Ya, Export Sekarang')
+                    ->modalCancelActionLabel('Batal'),
             ]);
     }
 

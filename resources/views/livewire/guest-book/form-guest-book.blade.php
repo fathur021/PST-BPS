@@ -1,6 +1,5 @@
 <div x-data="{ pekerjaan: '{{ $pekerjaan }}',
              jenisKelamin: '{{ $jenis_kelamin }}',
-              jenisLayanan: '{{ $jenis_layanan ?? '' }}',
                tujuanLainnya: false,
                isFromWA: {{ $this->isFromWhatsApp ? 'true' : 'false' }} 
                }" @pekerjaan-changed.window="pekerjaan = $event.detail; $wire.set('pekerjaan', pekerjaan)"
@@ -12,23 +11,16 @@
     <!-- ========================= -->
     <div class="mb-6 text-center">
         @if($this->isFromWhatsApp)
-
         <!-- akses dari wa -->
         <div
             class="inline-flex items-center justify-center gap-3 px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg">
-
             <i class="fa-brands fa-whatsapp text-lg"></i>
-            <span class="font-bold">Akses dari WhatsApp</span>
-
+            <span class="font-bold ">Form Identitas Pengujung Online</span>
         </div>
         @else
-        <div class="inline-flex items-center justify-center gap-3 px-4 py-2 rounded-lg
-bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
-
+        <div class="inline-flex items-center justify-center gap-3 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
             <i class="fa-solid fa-globe text-lg"></i>
-
-            <span class="font-bold">Akses Langsung Web</span>
-
+            <span class="font-bold">Form Identitas Pengujung Langsung</span>
         </div>
         @endif
     </div>
@@ -38,7 +30,7 @@ bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
 
         <div
             class="mt-5 space-y-8 border-b lg:mt-0 border-gray-900/10 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
-            <form wire:submit.prevent="submit">
+            <form wire:submit.prevent="submit" enctype="multipart/form-data">
                 <!-- Nama Lengkap -->
                 <div class="pb-3 sm:pb-6">
                     <livewire:components.text-input colorText="text-grey" label="Nama Lengkap" name="nama_lengkap"
@@ -123,41 +115,7 @@ bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
                         placeholder="pstbps@gmail.com" type="email" wire:model="email" />
                 </div>
 
-
-                <!-- Jenis Layanan (Hanya Tampil Jika dari WhatsApp) -->
-                <div x-show="isFromWA" x-transition>
-                    <div class="py-3 sm:py-6">
-                        <livewire:components.radio-button-input colorText="text-grey" name="jenis_layanan"
-                            label="Jenis Layanan" :options="['pst' => 'PST', 'ppid' => 'PPID']"
-                            wire:model="jenis_layanan" />
-                    </div>
-                </div>
-
-                <!-- Web Langsung: Tidak ada pilihan, hanya info -->
-                <!-- <div x-show="!isFromWA" x-transition>
-                    <div class="py-3 sm:py-6">
-                        <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
-                            <label class="block text-sm font-bold leading-6 text-white sm:text-lg">
-                                Jenis Layanan
-                            </label>
-                            <div class="mt-2 sm:col-span-2 sm:mt-0">
-                                <div class="h-full">
-                                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                        <p class="text-sm text-blue-800">
-                                            Tidak perlu memilih jenis layanan untuk pendaftaran web langsung
-                                        </p>
-                                        <p class="text-xs text-blue-600 mt-1">
-                                            Ingin memilih jenis layanan? Gunakan link WhatsApp.
-                                        </p>
-                                    </div> -->
-                <!-- Hidden input untuk NULL value -->
-                <!-- <input type="hidden" name="jenis_layanan" wire:model="jenis_layanan" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
-
+                
 
                 <!-- Pilihan Lainnya (Jika pekerjaan adalah umum, peneliti, dll) -->
                 <div class="py-3 sm:py-6">
@@ -185,10 +143,9 @@ bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
                     'name' => 'tujuan_kunjungan',
                     'label' => 'Tujuan Kunjungan',
                     'options' => [
-                    'permintaan_data/peta' => 'Permintaan Data/Peta',
+                    'perpustakaan' => 'Perpustakaan',
                     'konsultasi_statistik' => 'Konsultasi Statistik',
-                    'permintaan_data_mikro' => 'Permintaan Data Mikro',
-                    'romantik' => 'Romantik',
+                    'rekomendasi_statistik' => 'Rekomendasi Statistik',
                     'lainnya' => 'Lainnya',
                     ],
                     'colorText' => 'text-grey',
@@ -202,70 +159,89 @@ bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
                     <div x-show="tujuanLainnya">
                         <livewire:components.text-input colorText="text-grey" type="textarea" rows="4"
                             name="tujuan_kunjungan_lainnya" wire:model="tujuan_kunjungan_lainnya"
-                            placeholder="Sebutkan tujuan lainnya" />
+                            placeholder="Sebutkan tujuan lainnya. ex : Permohonan pengusulan magang di Kantor BPS Kota Bukittinggi" />
                     </div>
                 </div>
 
-                <!-- Bukti Identitas Diri -->
-                <div class="py-3 sm:py-6">
-                    <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 ">
-                        <label for="bukti_identitas_diri_path"
-                            class="block text-sm font-bold leading-6 text-white sm:text-lg">
-                            Bukti Identitas Diri
-                        </label>
-                        <div class="mt-2 sm:col-span-2 sm:mt-0">
-                            <div class="h-full">
-                                <input
-                                    class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer sm:text-lg bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                                    aria-describedby="file_input_help" id="bukti_identitas_diri_path" type="file"
-                                    name="bukti_identitas_diri_path" wire:model="bukti_identitas_diri_path">
-                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">SVG, PNG,
-                                    JPG atau PDF (MAX.2MB).</p>
-                            </div>
 
-                            @error('bukti_identitas_diri_path')
-                            <span class="text-sm text-red-500">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
+                <!-- Deskripsi Tambahan -->
+                 <div class="py-3 sm:py-6">
+    <livewire:components.text-input 
+        colorText="text-grey" 
+        type="textarea" 
+        rows="4" 
+        name="deskripsi"
+        label="Deskripsi / Keterangan Tambahan"
+        placeholder="Contoh: Permintaan data Tingkat Pengangguran Kota Bukittinggi Tahun 2025
+"
+        wire:model="deskripsi"
+        :optional="true" />
+</div>
+
+
+                <!-- Upload KTP - Bagian yang diperbaiki -->
+                <div class="py-3 sm:py-6" wire:key="ktp-upload-section">
+    <div class="grid grid-cols-1 gap-y-2 sm:grid-cols-3 sm:gap-x-4 sm:items-start">
+
+        <!-- LABEL (KIRI) -->
+        <label class="block text-sm font-bold text-grey sm:pt-2">
+            Upload KTP
+        </label>
+
+        <!-- INPUT (KANAN) -->
+        <div class="sm:col-span-2">
+            <input
+                type="file"
+                wire:model.defer="ktp"
+                accept=".jpg,.jpeg,.png,.pdf"
+                class="block w-full text-sm text-gray-700
+                       border border-gray-300 rounded-lg
+                       bg-white cursor-pointer
+                       focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400
+                       file:mr-4 file:py-2 file:px-4
+                       file:rounded-l-lg file:border-0
+                       file:text-sm file:font-semibold
+                       file:bg-yellow-400 file:text-gray-900
+                       hover:file:bg-yellow-300"
+            />
+
+            <!-- Helper -->
+            <p class="mt-1 text-xs text-white">
+                JPG, PNG, PDF • Maks 2MB
+            </p>
+
+            <!-- Loading indicator untuk file upload -->
+            <div wire:loading wire:target="ktp" class="mt-2">
+                <div class="flex items-center text-sm text-yellow-400">
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-400 mr-2"></div>
+                    Mengunggah file...
                 </div>
+            </div>
 
-                <!-- Dokumen Formulir Permintaan Publik -->
-                <div class="py-3 sm:py-6">
-                    <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 ">
-                        <label for="dokumen_permintaan_informasi_publik_path"
-                            class="block text-sm font-bold leading-6 text-white sm:text-lg">
-                            Dokumen Formulir Permintaan Publik
-                        </label>
-                        <div class="mt-2 sm:col-span-2 sm:mt-0">
-                            <div class="h-full">
-                                <input
-                                    class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer sm:text-lg bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                                    aria-describedby="file_input_help" id="dokumen_permintaan_informasi_publik_path"
-                                    type="file" name="dokumen_permintaan_informasi_publik_path"
-                                    wire:model="dokumen_permintaan_informasi_publik_path">
-                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">SVG, PNG,
-                                    JPG atau PDF (MAX.2MB).</p>
-                            </div>
+            <!-- Error -->
+            @error('ktp')
+                <p class="mt-1 text-sm text-red-600">
+                    {{ $message }}
+                </p>
+            @enderror
+        </div>
+    </div>
+</div>
 
-                            @error('dokumen_permintaan_informasi_publik_path')
-                            <span class="text-sm text-red-500">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tombol Submit dengan Warna Berbeda -->
+                <!-- Tombol Submit dengan perbaikan wire:target -->
                 <div class="flex items-center justify-end mt-6 gap-x-6">
-                    <button type="submit" wire:loading.attr="disabled" class="inline-flex items-center justify-center w-full px-4 py-3 text-sm font-bold text-white border border-transparent rounded-lg gap-x-2 sm:text-lg 
-                        @if($this->isFromWhatsApp) bg-lightYellow hover:bg-lightYellow/80 focus:bg-green-700
-                        @else bg-lightYellow hover:bg-lightYellow/80 focus:bg-lightYellow/80
-                        @endif
-                        disabled:opacity-50 disabled:pointer-events-none">
-                        <span wire:loading.remove>
+                    <button type="submit" 
+                            wire:loading.attr="disabled"
+                            wire:target="submit"
+                            class="inline-flex items-center justify-center w-full px-4 py-3 text-sm font-bold text-white border border-transparent rounded-lg gap-x-2 sm:text-lg 
+                            @if($this->isFromWhatsApp) bg-lightYellow hover:bg-lightYellow/80 focus:bg-green-700
+                            @else bg-lightYellow hover:bg-lightYellow/80 focus:bg-lightYellow/80
+                            @endif
+                            disabled:opacity-50 disabled:pointer-events-none">
+                        <span wire:loading.remove wire:target="submit">
                             Kirim
                         </span>
-                        <span wire:loading>
+                        <span wire:loading wire:target="submit">
                             <div role="status">
                                 <svg aria-hidden="true" class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 
                                     @if($this->isFromWhatsApp) fill-green-500
@@ -327,12 +303,21 @@ bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
                         <div class="queue-box">
                             {{ $nomorAntrian ? sprintf('%03d', $nomorAntrian) : '000' }}
                         </div>
+                        <!-- Tambahan info bahwa antrian terpisah -->
+                        <div class="mt-2 text-xs opacity-75">
+                            @if ($this->isFromWhatsApp)
+                            <i class="fa-solid fa-circle-info"></i>
+                            Antrian WhatsApp terpisah dari antrian Web
+                            @else
+                            <i class="fa-solid fa-circle-info"></i>
+                            Antrian Web terpisah dari antrian WhatsApp
+                            @endif
+                        </div>
                     </div>
 
                     <!-- Waktu -->
                     <p class="modal-time">
                         <i class="fa-regular fa-clock"></i>
-
                         {{ now()->format('H:i') }} • {{ now()->format('d/m/Y') }}
                     </p>
 
@@ -345,13 +330,24 @@ bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
 
                 <!-- ================= FOOTER ================= -->
                 <div class="modal-footer">
-
-                    <button onclick="window.print()" type="button" class="btn btn-outline print-hidden flex items-center justify-center gap-2
-           text-blue-600 border-blue-600 hover:bg-blue-600 hover:text-white">
-
-                        <i class="fa-solid fa-download"></i>
-                        Unduh Bukti Pendaftaran
+                    <!-- TOMBOL DOWNLOAD PDF -->
+                    <button 
+                        wire:click="downloadPdf"
+                        wire:target="downloadPdf"
+                        wire:loading.attr="disabled"
+                        type="button" 
+                        class="btn btn-outline print-hidden flex items-center justify-center gap-2
+                        text-blue-600 border-blue-600 hover:bg-blue-600 hover:text-white">
+                        <i class="fa-solid fa-file-pdf"></i>
+                        <span wire:loading.remove wire:target="downloadPdf">
+                            Unduh Bukti Pendaftaran (PDF)
+                        </span>
+                        <span wire:loading wire:target="downloadPdf">
+                            <i class="fa-solid fa-spinner fa-spin"></i> Membuat PDF...
+                        </span>
                     </button>
+
+                    <!-- TOMBOL PRINT DIHAPUS DARI SINI -->
 
                     <button onclick="window.location.href='/'" type="button" class="btn btn-primary print-hidden">
                         Kembali ke Halaman Utama
@@ -490,8 +486,9 @@ bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
 
         .btn-outline {
             background: transparent;
-            border: 1px solid #64748b;
+            border: 2px solid;
             color: #e5e7eb;
+            transition: all 0.3s ease;
         }
 
         .btn:hover {
@@ -508,7 +505,6 @@ bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
                 transform: scale(0.9);
                 opacity: 0;
             }
-
             to {
                 transform: scale(1);
                 opacity: 1;
@@ -524,8 +520,6 @@ bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
             .print-area,
             .print-area * {
                 visibility: visible;
-
-                /* 🔒 PAKSA WARNA TETAP */
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -536,17 +530,36 @@ bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
 
             .modal-card {
                 box-shadow: none !important;
+                background: white !important;
+                color: black !important;
+            }
+
+            .modal-header {
+                background: #f0f0f0 !important;
+                color: black !important;
+            }
+
+            .queue-box {
+                background: #f0f0f0 !important;
+                border: 2px solid black !important;
+                color: black !important;
+            }
+
+            .modal-info {
+                background: #f0f0f0 !important;
+                border-left: 4px solid black !important;
+                color: black !important;
+            }
+
+            .modal-footer {
+                background: #f0f0f0 !important;
+                color: black !important;
             }
 
             .print-hidden {
                 display: none !important;
             }
         }
-
     </style>
     @endif
-
-
-
-
 </div>

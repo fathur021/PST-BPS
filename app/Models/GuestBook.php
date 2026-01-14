@@ -10,7 +10,7 @@ class GuestBook extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nomor_antrian',  // Pindah ke atas (sebelum tamu_dari)
+        'nomor_antrian',  
         'tamu_dari',      // TAMBAHKAN INI
         'nama_lengkap',
         'jenis_kelamin',
@@ -33,10 +33,9 @@ class GuestBook extends Model
         'in_progress_at',
         'done_at',
         'duration',
-        'bukti_identitas_diri_path',
         'jenis_layanan',
-        'dokumen_permintaan_informasi_publik_path',
-        // 'nomor_antrian', // HAPUS/SALIN YANG INI KE ATAS
+        'deskripsi',  
+        'ktp',
     ];
 
     protected $casts = [
@@ -79,8 +78,29 @@ class GuestBook extends Model
         };
     }
 
+
+
+    /**
+     * Accessor untuk mendapatkan URL lengkap file KTP
+     */
+    public function getKtpUrlAttribute()
+    {
+        return $this->ktp ? asset('storage/' . $this->ktp) : null;
+    }
+
+    /**
+     * Accessor untuk menampilkan nama file KTP
+     */
+    public function getKtpFileNameAttribute()
+    {
+        if ($this->ktp) {
+            return basename($this->ktp);
+        }
+        return null;
+    }
     /**
      * Membuat nomor antrian otomatis saat data GuestBook dibuat
+     * NOMOR ANTRIAN TERPISAH untuk Web dan WhatsApp
      */
     protected static function booted()
     {
@@ -88,8 +108,11 @@ class GuestBook extends Model
             // Reset per hari
             $today = now()->format('Y-m-d');
             
-            // Hitung berapa banyak data hari ini
-            $countToday = self::whereDate('created_at', $today)->count();
+            // Hitung berdasarkan sumber tamu (web/wa)
+            // Ini satu-satunya perubahan dari kode sebelumnya
+            $countToday = self::whereDate('created_at', $today)
+                ->where('tamu_dari', $guestBook->tamu_dari)  // Tambahkan filter ini
+                ->count();
             
             // Format: 001, 002, dst
             $guestBook->nomor_antrian = str_pad($countToday + 1, 3, '0', STR_PAD_LEFT);
