@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 14, 2026 at 09:19 AM
+-- Generation Time: Jan 14, 2026 at 09:47 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -27,10 +27,12 @@ SET time_zone = "+00:00";
 -- Table structure for table `cache`
 --
 
-CREATE TABLE `cache` (
+DROP TABLE IF EXISTS `cache`;
+CREATE TABLE IF NOT EXISTS `cache` (
   `key` varchar(255) NOT NULL,
   `value` mediumtext NOT NULL,
-  `expiration` int(11) NOT NULL
+  `expiration` int(11) NOT NULL,
+  PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -54,10 +56,12 @@ INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
 -- Table structure for table `cache_locks`
 --
 
-CREATE TABLE `cache_locks` (
+DROP TABLE IF EXISTS `cache_locks`;
+CREATE TABLE IF NOT EXISTS `cache_locks` (
   `key` varchar(255) NOT NULL,
   `owner` varchar(255) NOT NULL,
-  `expiration` int(11) NOT NULL
+  `expiration` int(11) NOT NULL,
+  PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -66,8 +70,9 @@ CREATE TABLE `cache_locks` (
 -- Table structure for table `exports`
 --
 
-CREATE TABLE `exports` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `exports`;
+CREATE TABLE IF NOT EXISTS `exports` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `completed_at` timestamp NULL DEFAULT NULL,
   `file_disk` varchar(255) NOT NULL,
   `file_name` varchar(255) DEFAULT NULL,
@@ -77,8 +82,10 @@ CREATE TABLE `exports` (
   `successful_rows` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `exports_user_id_foreign` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `exports`
@@ -147,13 +154,16 @@ INSERT INTO `exports` (`id`, `completed_at`, `file_disk`, `file_name`, `exporter
 -- Table structure for table `failed_import_rows`
 --
 
-CREATE TABLE `failed_import_rows` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `failed_import_rows`;
+CREATE TABLE IF NOT EXISTS `failed_import_rows` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`data`)),
   `import_id` bigint(20) UNSIGNED NOT NULL,
   `validation_error` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `failed_import_rows_import_id_foreign` (`import_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -162,14 +172,17 @@ CREATE TABLE `failed_import_rows` (
 -- Table structure for table `failed_jobs`
 --
 
-CREATE TABLE `failed_jobs` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `failed_jobs`;
+CREATE TABLE IF NOT EXISTS `failed_jobs` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `uuid` varchar(255) NOT NULL,
   `connection` text NOT NULL,
   `queue` text NOT NULL,
   `payload` longtext NOT NULL,
   `exception` longtext NOT NULL,
-  `failed_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `failed_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -178,8 +191,9 @@ CREATE TABLE `failed_jobs` (
 -- Table structure for table `feedback`
 --
 
-CREATE TABLE `feedback` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `feedback`;
+CREATE TABLE IF NOT EXISTS `feedback` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nama_lengkap` varchar(255) DEFAULT NULL,
   `petugas_pst` bigint(20) UNSIGNED DEFAULT NULL,
   `front_office` bigint(20) UNSIGNED DEFAULT NULL,
@@ -188,8 +202,11 @@ CREATE TABLE `feedback` (
   `kepuasan_sarana_prasarana` int(11) DEFAULT NULL,
   `kritik_saran` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `feedback_petugas_pst_foreign` (`petugas_pst`),
+  KEY `feedback_front_office_foreign` (`front_office`)
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `feedback`
@@ -246,16 +263,19 @@ INSERT INTO `feedback` (`id`, `nama_lengkap`, `petugas_pst`, `front_office`, `ke
 -- Table structure for table `feedback_pengaduans`
 --
 
-CREATE TABLE `feedback_pengaduans` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `feedback_pengaduans`;
+CREATE TABLE IF NOT EXISTS `feedback_pengaduans` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nama_lengkap` varchar(255) DEFAULT NULL,
   `petugas_pengaduan` bigint(20) UNSIGNED DEFAULT NULL,
   `kepuasan_petugas_pengaduan` int(11) DEFAULT NULL,
   `kepuasan_sarana_prasarana_pengaduan` int(11) DEFAULT NULL,
   `kritik_saran` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `feedback_pengaduans_petugas_pengaduan_foreign` (`petugas_pengaduan`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `feedback_pengaduans`
@@ -274,8 +294,9 @@ INSERT INTO `feedback_pengaduans` (`id`, `nama_lengkap`, `petugas_pengaduan`, `k
 -- Table structure for table `form_pengaduans`
 --
 
-CREATE TABLE `form_pengaduans` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `form_pengaduans`;
+CREATE TABLE IF NOT EXISTS `form_pengaduans` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nama_lengkap` varchar(255) NOT NULL,
   `alamat` text DEFAULT NULL,
   `pekerjaan` varchar(255) DEFAULT NULL,
@@ -290,8 +311,9 @@ CREATE TABLE `form_pengaduans` (
   `dokumen_permintaan_informasi_publik_path` varchar(255) DEFAULT NULL,
   `tanda_tangan` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `form_pengaduans`
@@ -307,8 +329,9 @@ INSERT INTO `form_pengaduans` (`id`, `nama_lengkap`, `alamat`, `pekerjaan`, `no_
 -- Table structure for table `guest_books`
 --
 
-CREATE TABLE `guest_books` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `guest_books`;
+CREATE TABLE IF NOT EXISTS `guest_books` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nomor_antrian` int(11) DEFAULT NULL,
   `tamu_dari` varchar(255) DEFAULT NULL,
   `nama_lengkap` varchar(255) DEFAULT NULL,
@@ -338,8 +361,12 @@ CREATE TABLE `guest_books` (
   `bukti_identitas_diri_path` varchar(255) DEFAULT NULL,
   `dokumen_permintaan_informasi_publik_path` varchar(255) DEFAULT NULL,
   `deskripsi` text DEFAULT NULL,
-  `ktp` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `ktp` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `guest_books_petugas_pst_foreign` (`petugas_pst`),
+  KEY `guest_books_provinsi_id_foreign` (`provinsi_id`),
+  KEY `guest_books_kota_id_foreign` (`kota_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=451 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `guest_books`
@@ -356,8 +383,9 @@ INSERT INTO `guest_books` (`id`, `nomor_antrian`, `tamu_dari`, `nama_lengkap`, `
 -- Table structure for table `imports`
 --
 
-CREATE TABLE `imports` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `imports`;
+CREATE TABLE IF NOT EXISTS `imports` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `completed_at` timestamp NULL DEFAULT NULL,
   `file_name` varchar(255) NOT NULL,
   `file_path` varchar(255) NOT NULL,
@@ -367,8 +395,10 @@ CREATE TABLE `imports` (
   `successful_rows` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `imports_user_id_foreign` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `imports`
@@ -384,15 +414,18 @@ INSERT INTO `imports` (`id`, `completed_at`, `file_name`, `file_path`, `importer
 -- Table structure for table `jobs`
 --
 
-CREATE TABLE `jobs` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `jobs`;
+CREATE TABLE IF NOT EXISTS `jobs` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `queue` varchar(255) NOT NULL,
   `payload` longtext NOT NULL,
   `attempts` tinyint(3) UNSIGNED NOT NULL,
   `reserved_at` int(10) UNSIGNED DEFAULT NULL,
   `available_at` int(10) UNSIGNED NOT NULL,
-  `created_at` int(10) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `created_at` int(10) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `jobs_queue_index` (`queue`)
+) ENGINE=InnoDB AUTO_INCREMENT=250 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `jobs`
@@ -435,7 +468,8 @@ INSERT INTO `jobs` (`id`, `queue`, `payload`, `attempts`, `reserved_at`, `availa
 -- Table structure for table `job_batches`
 --
 
-CREATE TABLE `job_batches` (
+DROP TABLE IF EXISTS `job_batches`;
+CREATE TABLE IF NOT EXISTS `job_batches` (
   `id` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   `total_jobs` int(11) NOT NULL,
@@ -445,7 +479,8 @@ CREATE TABLE `job_batches` (
   `options` mediumtext DEFAULT NULL,
   `cancelled_at` int(11) DEFAULT NULL,
   `created_at` int(11) NOT NULL,
-  `finished_at` int(11) DEFAULT NULL
+  `finished_at` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -504,11 +539,13 @@ INSERT INTO `job_batches` (`id`, `name`, `total_jobs`, `pending_jobs`, `failed_j
 -- Table structure for table `migrations`
 --
 
-CREATE TABLE `migrations` (
-  `id` int(10) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `migrations`;
+CREATE TABLE IF NOT EXISTS `migrations` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `migration` varchar(255) NOT NULL,
-  `batch` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `batch` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `migrations`
@@ -546,10 +583,13 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 -- Table structure for table `model_has_permissions`
 --
 
-CREATE TABLE `model_has_permissions` (
+DROP TABLE IF EXISTS `model_has_permissions`;
+CREATE TABLE IF NOT EXISTS `model_has_permissions` (
   `permission_id` bigint(20) UNSIGNED NOT NULL,
   `model_type` varchar(255) NOT NULL,
-  `model_id` bigint(20) UNSIGNED NOT NULL
+  `model_id` bigint(20) UNSIGNED NOT NULL,
+  PRIMARY KEY (`permission_id`,`model_id`,`model_type`),
+  KEY `model_has_permissions_model_id_model_type_index` (`model_id`,`model_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -558,10 +598,13 @@ CREATE TABLE `model_has_permissions` (
 -- Table structure for table `model_has_roles`
 --
 
-CREATE TABLE `model_has_roles` (
+DROP TABLE IF EXISTS `model_has_roles`;
+CREATE TABLE IF NOT EXISTS `model_has_roles` (
   `role_id` bigint(20) UNSIGNED NOT NULL,
   `model_type` varchar(255) NOT NULL,
-  `model_id` bigint(20) UNSIGNED NOT NULL
+  `model_id` bigint(20) UNSIGNED NOT NULL,
+  PRIMARY KEY (`role_id`,`model_id`,`model_type`),
+  KEY `model_has_roles_model_id_model_type_index` (`model_id`,`model_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -608,7 +651,8 @@ INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
 -- Table structure for table `notifications`
 --
 
-CREATE TABLE `notifications` (
+DROP TABLE IF EXISTS `notifications`;
+CREATE TABLE IF NOT EXISTS `notifications` (
   `id` char(36) NOT NULL,
   `type` varchar(255) NOT NULL,
   `notifiable_type` varchar(255) NOT NULL,
@@ -616,7 +660,9 @@ CREATE TABLE `notifications` (
   `data` text NOT NULL,
   `read_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `notifications_notifiable_type_notifiable_id_index` (`notifiable_type`,`notifiable_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -639,10 +685,12 @@ INSERT INTO `notifications` (`id`, `type`, `notifiable_type`, `notifiable_id`, `
 -- Table structure for table `password_reset_tokens`
 --
 
-CREATE TABLE `password_reset_tokens` (
+DROP TABLE IF EXISTS `password_reset_tokens`;
+CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
   `email` varchar(255) NOT NULL,
   `token` varchar(255) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL
+  `created_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -651,12 +699,15 @@ CREATE TABLE `password_reset_tokens` (
 -- Table structure for table `permissions`
 --
 
-CREATE TABLE `permissions` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `permissions`;
+CREATE TABLE IF NOT EXISTS `permissions` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `guard_name` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `permissions_name_guard_name_unique` (`name`,`guard_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -665,11 +716,13 @@ CREATE TABLE `permissions` (
 -- Table structure for table `provinces`
 --
 
-CREATE TABLE `provinces` (
+DROP TABLE IF EXISTS `provinces`;
+CREATE TABLE IF NOT EXISTS `provinces` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -721,12 +774,15 @@ INSERT INTO `provinces` (`id`, `name`, `created_at`, `updated_at`) VALUES
 -- Table structure for table `regencies`
 --
 
-CREATE TABLE `regencies` (
+DROP TABLE IF EXISTS `regencies`;
+CREATE TABLE IF NOT EXISTS `regencies` (
   `id` int(11) NOT NULL,
   `provinsi_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `regencies_provinsi_id_foreign` (`provinsi_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -1255,13 +1311,16 @@ INSERT INTO `regencies` (`id`, `provinsi_id`, `name`, `created_at`, `updated_at`
 -- Table structure for table `roles`
 --
 
-CREATE TABLE `roles` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `roles`;
+CREATE TABLE IF NOT EXISTS `roles` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `guard_name` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `roles_name_guard_name_unique` (`name`,`guard_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `roles`
@@ -1280,9 +1339,12 @@ INSERT INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VAL
 -- Table structure for table `role_has_permissions`
 --
 
-CREATE TABLE `role_has_permissions` (
+DROP TABLE IF EXISTS `role_has_permissions`;
+CREATE TABLE IF NOT EXISTS `role_has_permissions` (
   `permission_id` bigint(20) UNSIGNED NOT NULL,
-  `role_id` bigint(20) UNSIGNED NOT NULL
+  `role_id` bigint(20) UNSIGNED NOT NULL,
+  PRIMARY KEY (`permission_id`,`role_id`),
+  KEY `role_has_permissions_role_id_foreign` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1291,13 +1353,17 @@ CREATE TABLE `role_has_permissions` (
 -- Table structure for table `sessions`
 --
 
-CREATE TABLE `sessions` (
+DROP TABLE IF EXISTS `sessions`;
+CREATE TABLE IF NOT EXISTS `sessions` (
   `id` varchar(255) NOT NULL,
   `user_id` bigint(20) UNSIGNED DEFAULT NULL,
   `ip_address` varchar(45) DEFAULT NULL,
   `user_agent` text DEFAULT NULL,
   `payload` longtext NOT NULL,
-  `last_activity` int(11) NOT NULL
+  `last_activity` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `sessions_user_id_index` (`user_id`),
+  KEY `sessions_last_activity_index` (`last_activity`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -1317,12 +1383,14 @@ INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, 
 -- Table structure for table `slideshows`
 --
 
-CREATE TABLE `slideshows` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `slideshows`;
+CREATE TABLE IF NOT EXISTS `slideshows` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `detail` varchar(255) NOT NULL,
   `slideshow_path` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1331,8 +1399,9 @@ CREATE TABLE `slideshows` (
 -- Table structure for table `users`
 --
 
-CREATE TABLE `users` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
@@ -1343,8 +1412,10 @@ CREATE TABLE `users` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `custom_fields` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`custom_fields`)),
-  `avatar_url` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `avatar_url` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `users_email_unique` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `users`
@@ -1383,269 +1454,6 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `ge
 (32, 'Muhammad Irfan', 'muhammad.irfan@bps.go.id', NULL, '$2y$12$amnRfIjX2htO/qXyyxQPfOrnNSCgJWsI7KySupxELRA/DoK1H/ARe', 'laki-laki', '1991-02-16', NULL, '2025-11-04 06:44:35', '2025-11-04 06:44:35', NULL, NULL),
 (33, 'Hani', 'hani@gmail.com', NULL, '$2y$12$VdoAqJRZRr7GsqmBlYszfu.5d62E4IuTCCtNtmt7dn5W/QtrlVxVG', 'perempuan', '2002-02-13', NULL, '2026-01-02 01:53:16', '2026-01-02 01:53:16', NULL, 'avatars/01KDY6HDESJTN08W2DA0346D4N.jpg'),
 (34, 'Fathur', 'fathur@gmail.com', NULL, '$2y$12$2NBMSVbEQ./7qmj7p03v/enLy/C3YTQDMneDpOnNSVRoudRPFi9gS', 'laki-laki', '1999-10-19', NULL, '2026-01-10 15:59:39', '2026-01-10 16:00:51', NULL, NULL);
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `cache`
---
-ALTER TABLE `cache`
-  ADD PRIMARY KEY (`key`);
-
---
--- Indexes for table `cache_locks`
---
-ALTER TABLE `cache_locks`
-  ADD PRIMARY KEY (`key`);
-
---
--- Indexes for table `exports`
---
-ALTER TABLE `exports`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `exports_user_id_foreign` (`user_id`);
-
---
--- Indexes for table `failed_import_rows`
---
-ALTER TABLE `failed_import_rows`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `failed_import_rows_import_id_foreign` (`import_id`);
-
---
--- Indexes for table `failed_jobs`
---
-ALTER TABLE `failed_jobs`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`);
-
---
--- Indexes for table `feedback`
---
-ALTER TABLE `feedback`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `feedback_petugas_pst_foreign` (`petugas_pst`),
-  ADD KEY `feedback_front_office_foreign` (`front_office`);
-
---
--- Indexes for table `feedback_pengaduans`
---
-ALTER TABLE `feedback_pengaduans`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `feedback_pengaduans_petugas_pengaduan_foreign` (`petugas_pengaduan`);
-
---
--- Indexes for table `form_pengaduans`
---
-ALTER TABLE `form_pengaduans`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `guest_books`
---
-ALTER TABLE `guest_books`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `guest_books_petugas_pst_foreign` (`petugas_pst`),
-  ADD KEY `guest_books_provinsi_id_foreign` (`provinsi_id`),
-  ADD KEY `guest_books_kota_id_foreign` (`kota_id`);
-
---
--- Indexes for table `imports`
---
-ALTER TABLE `imports`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `imports_user_id_foreign` (`user_id`);
-
---
--- Indexes for table `jobs`
---
-ALTER TABLE `jobs`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `jobs_queue_index` (`queue`);
-
---
--- Indexes for table `job_batches`
---
-ALTER TABLE `job_batches`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `migrations`
---
-ALTER TABLE `migrations`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `model_has_permissions`
---
-ALTER TABLE `model_has_permissions`
-  ADD PRIMARY KEY (`permission_id`,`model_id`,`model_type`),
-  ADD KEY `model_has_permissions_model_id_model_type_index` (`model_id`,`model_type`);
-
---
--- Indexes for table `model_has_roles`
---
-ALTER TABLE `model_has_roles`
-  ADD PRIMARY KEY (`role_id`,`model_id`,`model_type`),
-  ADD KEY `model_has_roles_model_id_model_type_index` (`model_id`,`model_type`);
-
---
--- Indexes for table `notifications`
---
-ALTER TABLE `notifications`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `notifications_notifiable_type_notifiable_id_index` (`notifiable_type`,`notifiable_id`);
-
---
--- Indexes for table `password_reset_tokens`
---
-ALTER TABLE `password_reset_tokens`
-  ADD PRIMARY KEY (`email`);
-
---
--- Indexes for table `permissions`
---
-ALTER TABLE `permissions`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `permissions_name_guard_name_unique` (`name`,`guard_name`);
-
---
--- Indexes for table `provinces`
---
-ALTER TABLE `provinces`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `regencies`
---
-ALTER TABLE `regencies`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `regencies_provinsi_id_foreign` (`provinsi_id`);
-
---
--- Indexes for table `roles`
---
-ALTER TABLE `roles`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `roles_name_guard_name_unique` (`name`,`guard_name`);
-
---
--- Indexes for table `role_has_permissions`
---
-ALTER TABLE `role_has_permissions`
-  ADD PRIMARY KEY (`permission_id`,`role_id`),
-  ADD KEY `role_has_permissions_role_id_foreign` (`role_id`);
-
---
--- Indexes for table `sessions`
---
-ALTER TABLE `sessions`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `sessions_user_id_index` (`user_id`),
-  ADD KEY `sessions_last_activity_index` (`last_activity`);
-
---
--- Indexes for table `slideshows`
---
-ALTER TABLE `slideshows`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `users_email_unique` (`email`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `exports`
---
-ALTER TABLE `exports`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
-
---
--- AUTO_INCREMENT for table `failed_import_rows`
---
-ALTER TABLE `failed_import_rows`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `failed_jobs`
---
-ALTER TABLE `failed_jobs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `feedback`
---
-ALTER TABLE `feedback`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
-
---
--- AUTO_INCREMENT for table `feedback_pengaduans`
---
-ALTER TABLE `feedback_pengaduans`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT for table `form_pengaduans`
---
-ALTER TABLE `form_pengaduans`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `guest_books`
---
-ALTER TABLE `guest_books`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=451;
-
---
--- AUTO_INCREMENT for table `imports`
---
-ALTER TABLE `imports`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `jobs`
---
-ALTER TABLE `jobs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=250;
-
---
--- AUTO_INCREMENT for table `migrations`
---
-ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
-
---
--- AUTO_INCREMENT for table `permissions`
---
-ALTER TABLE `permissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `roles`
---
-ALTER TABLE `roles`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT for table `slideshows`
---
-ALTER TABLE `slideshows`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- Constraints for dumped tables
