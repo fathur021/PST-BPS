@@ -13,14 +13,14 @@
         @if($this->isFromWhatsApp)
         <!-- akses dari wa -->
         <div
-            class="inline-flex items-center justify-center gap-3 px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg">
+            class="inline-flex items-center justify-center mb-4 gap-3 px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg">
             <i class="fa-brands fa-whatsapp text-lg"></i>
-            <span class="font-bold ">Form Identitas Pengujung Online</span>
+            <span class="font-bold text-lg ">Form Identitas Pengunjung Online</span>
         </div>
         @else
-        <div class="inline-flex items-center justify-center gap-3 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
+        <div class="inline-flex items-center justify-center mb-4 gap-3 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
             <i class="fa-solid fa-globe text-lg"></i>
-            <span class="font-bold">Form Identitas Pengujung Langsung</span>
+            <span class="font-bold text-lg">Form Identitas Pengunjung Langsung</span>
         </div>
         @endif
     </div>
@@ -184,7 +184,7 @@
     <div class="grid grid-cols-1 gap-y-2 sm:grid-cols-3 sm:gap-x-4 sm:items-start">
 
         <!-- LABEL (KIRI) -->
-        <label class="block text-sm font-bold text-grey sm:pt-2">
+        <label class="block text-lg font-bold text-grey sm:pt-2">
             Upload KTP
         </label>
 
@@ -273,7 +273,11 @@
 
                 <!-- ================= HEADER ================= -->
                 <div class="modal-header
-                {{ $this->isFromWhatsApp ? 'modal-wa' : 'modal-web' }}">
+                    @if($this->isFromWhatsApp)
+                        modal-wa
+                    @else
+                        modal-web
+                    @endif">
 
                     <!-- Badge Source -->
                     <div class="modal-badge">
@@ -300,7 +304,12 @@
 
                     <!-- Nomor Antrian -->
                     <div class="queue-wrapper">
-                        <div class="queue-box">
+                        <div class="queue-box 
+                            @if($this->isFromWhatsApp)
+                                border-green-500 text-green-500
+                            @else
+                                border-yellow-400 text-yellow-400
+                            @endif">
                             {{ $nomorAntrian ? sprintf('%03d', $nomorAntrian) : '000' }}
                         </div>
                         <!-- Tambahan info bahwa antrian terpisah -->
@@ -322,34 +331,45 @@
                     </p>
 
                     <!-- Info -->
-                    <div class="modal-info">
+                    <div class="modal-info 
+                        @if($this->isFromWhatsApp)
+                            border-green-500
+                        @else
+                            border-yellow-400
+                        @endif">
                         <b>Pendaftaran berhasil!</b><br>
                         Silakan menunggu panggilan petugas
                     </div>
-                </div>
 
                 <!-- ================= FOOTER ================= -->
                 <div class="modal-footer">
                     <!-- TOMBOL DOWNLOAD PDF -->
                     <button 
-                        wire:click="downloadPdf"
-                        wire:target="downloadPdf"
-                        wire:loading.attr="disabled"
-                        type="button" 
-                        class="btn btn-outline print-hidden flex items-center justify-center gap-2
-                        text-blue-600 border-blue-600 hover:bg-blue-600 hover:text-white">
-                        <i class="fa-solid fa-file-pdf"></i>
-                        <span wire:loading.remove wire:target="downloadPdf">
-                            Unduh Bukti Pendaftaran (PDF)
-                        </span>
-                        <span wire:loading wire:target="downloadPdf">
-                            <i class="fa-solid fa-spinner fa-spin"></i> Membuat PDF...
-                        </span>
-                    </button>
+    wire:click="downloadPdf"
+    wire:target="downloadPdf"
+    wire:loading.attr="disabled"
+    type="button" 
+    class="btn btn-outline print-hidden flex items-center justify-center gap-2
+        text-white border-white hover:bg-white hover:text-gray-900">
+    <i class="fa-solid fa-file-pdf"></i>
+    <span wire:loading.remove wire:target="downloadPdf">
+        Unduh Bukti Pendaftaran (PDF)
+    </span>
+    <span wire:loading wire:target="downloadPdf">
+        <i class="fa-solid fa-spinner fa-spin"></i> Membuat PDF...
+    </span>
+</button>
 
                     <!-- TOMBOL PRINT DIHAPUS DARI SINI -->
 
-                    <button onclick="window.location.href='/'" type="button" class="btn btn-primary print-hidden">
+                    <button onclick="window.location.href='/'" type="button" 
+                        class="btn btn-primary print-hidden
+                            @if($this->isFromWhatsApp)
+                                bg-green-600 hover:bg-green-700
+                            @else
+                                bg-yellow-600 hover:bg-yellow-700
+                            @endif
+                            text-white">
                         Kembali ke Halaman Utama
                     </button>
 
@@ -360,206 +380,8 @@
             </div>
         </div>
     </div>
-
-    <!-- ================= FULL CSS ================= -->
-    <style>
-        /* ================= OVERLAY ================= */
-        .modal-overlay {
-            background: rgba(15, 23, 42, 0.85);
-        }
-
-        /* ================= CARD ================= */
-        .modal-card {
-            background: #0f172a;
-            color: #e5e7eb;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
-        }
-
-        /* ================= HEADER ================= */
-        .modal-header {
-            position: relative;
-            padding: 14px;
-            text-align: center;
-            font-weight: 700;
-        }
-
-        .modal-wa {
-            background: linear-gradient(135deg, #16a34a, #15803d);
-        }
-
-        .modal-web {
-            background: linear-gradient(135deg, #facc15, #ca8a04);
-            color: #1f2937;
-        }
-
-        .modal-title {
-            font-size: 15px;
-            letter-spacing: 0.05em;
-        }
-
-        /* Badge */
-        .modal-badge {
-            position: absolute;
-            top: 8px;
-            right: 10px;
-            background: rgba(255, 255, 255, 0.25);
-            color: white;
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 999px;
-        }
-
-        /* ================= BODY ================= */
-        .modal-body {
-            padding: 18px;
-            text-align: center;
-        }
-
-        .modal-subtitle {
-            font-size: 11px;
-            opacity: 0.8;
-            margin-bottom: 10px;
-        }
-
-        .queue-wrapper {
-            margin: 14px 0;
-        }
-
-        .queue-box {
-            display: inline-block;
-            background: #020617;
-            border: 2px solid #facc15;
-            color: #fde047;
-            font-size: 42px;
-            font-weight: 900;
-            padding: 12px 22px;
-            border-radius: 14px;
-            letter-spacing: 6px;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
-        }
-
-        .modal-time {
-            font-size: 11px;
-            opacity: 0.75;
-            margin-bottom: 14px;
-        }
-
-        /* Info */
-        .modal-info {
-            background: #020617;
-            border-left: 4px solid #22c55e;
-            padding: 10px;
-            font-size: 12px;
-            border-radius: 8px;
-        }
-
-        /* ================= FOOTER ================= */
-        .modal-footer {
-            background: #020617;
-            padding: 14px;
-            text-align: center;
-        }
-
-        .modal-footer-text {
-            font-size: 10px;
-            opacity: 0.5;
-            margin-top: 8px;
-        }
-
-        /* ================= BUTTON ================= */
-        .btn {
-            width: 100%;
-            padding: 10px;
-            border-radius: 10px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #facc15, #ca8a04);
-            color: #1f2937;
-            border: none;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid;
-            color: #e5e7eb;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-        }
-
-        /* ================= ANIMATION ================= */
-        .animate-scale-in {
-            animation: scale-in 0.25s ease-out;
-        }
-
-        @keyframes scale-in {
-            from {
-                transform: scale(0.9);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        /* ================= PRINT (WARNA DIKUNCI) ================= */
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-
-            .print-area,
-            .print-area * {
-                visibility: visible;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-
-            .modal-overlay {
-                background: white !important;
-            }
-
-            .modal-card {
-                box-shadow: none !important;
-                background: white !important;
-                color: black !important;
-            }
-
-            .modal-header {
-                background: #f0f0f0 !important;
-                color: black !important;
-            }
-
-            .queue-box {
-                background: #f0f0f0 !important;
-                border: 2px solid black !important;
-                color: black !important;
-            }
-
-            .modal-info {
-                background: #f0f0f0 !important;
-                border-left: 4px solid black !important;
-                color: black !important;
-            }
-
-            .modal-footer {
-                background: #f0f0f0 !important;
-                color: black !important;
-            }
-
-            .print-hidden {
-                display: none !important;
-            }
-        }
-    </style>
+    
+    
+    
     @endif
 </div>
