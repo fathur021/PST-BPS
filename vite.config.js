@@ -8,6 +8,7 @@ export default defineConfig({
                 "resources/css/app.css",
                 "resources/js/app.js",
                 "resources/css/filament/user/theme.css",
+                "vendor/livewire/livewire/dist/livewire.js"
             ],
             refresh: [...refreshPaths, "app/Livewire/**"],
         }),
