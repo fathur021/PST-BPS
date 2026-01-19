@@ -14,11 +14,5 @@
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
-  },
-  "vendor/livewire/livewire/dist/livewire.js": {
-    "file": "assets/livewire-JbWJlcVz.js",
-    "name": "livewire",
-    "src": "vendor/livewire/livewire/dist/livewire.js",
-    "isEntry": true
   }
 }
