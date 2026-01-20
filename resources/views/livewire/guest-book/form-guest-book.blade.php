@@ -12,16 +12,19 @@
     <div class="mb-6 text-center">
         @if($this->isFromWhatsApp)
         <!-- akses dari wa -->
-        <div
-            class="inline-flex items-center justify-center mb-4 gap-3 px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg">
-            <i class="fa-brands fa-whatsapp text-lg"></i>
-            <span class="font-bold text-lg ">Form Identitas Pengunjung Online</span>
-        </div>
+        <div class="text-center mb-6">
+    <div class="inline-flex items-center justify-center gap-3">
+        <i class="fa-brands fa-whatsapp text-lg text-white"></i>
+        <span class="font-bold text-lg text-white">Form Identitas Pengunjung Online</span>
+    </div>
+</div>
         @else
-        <div class="inline-flex items-center justify-center mb-4 gap-3 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
-            <i class="fa-solid fa-globe text-lg"></i>
-            <span class="font-bold text-lg">Form Identitas Pengunjung Langsung</span>
-        </div>
+        <div class="text-center mb-6">
+    <div class="inline-flex items-center justify-center gap-3">
+        <i class="fa-brands fa-whatsapp text-lg text-white"></i>
+        <span class="font-bold text-lg text-white">Form Identitas Pengunjung Langsung</span>
+    </div>
+</div>
         @endif
     </div>
 
@@ -96,18 +99,16 @@
                 </div>
 
                 {{-- No HP --}}
-                <div class="py-3 sm:py-6 flex flex-col items-center">
-                    <div class="w-full max-w-md">
-                        <livewire:components.text-input colorText="text-grey" type="tel" label="No HP" name="no_hp"
-                            wire:model.live="no_hp" placeholder="081234567890" pattern="[0-9]*" inputmode="numeric" />
+                <div class="py-3 sm:py-6">
+    <livewire:components.text-input colorText="text-grey" type="tel" label="No HP" name="no_hp"
+        wire:model.live="no_hp" placeholder="081234567890" pattern="[0-9]*" inputmode="numeric" />
 
-                        @error('no_hp')
-                        <p class="text-red-500 text-sm mt-1 text-center">
-                            {{ $message }}
-                        </p>
-                        @enderror
-                    </div>
-                </div>
+    @error('no_hp')
+    <p class="text-red-500 text-sm mt-1">
+        {{ $message }}
+    </p>
+    @enderror
+</div>
 
 
                 <div class="py-3 sm:py-6">
@@ -234,7 +235,7 @@
                             wire:loading.attr="disabled"
                             wire:target="submit"
                             class="inline-flex items-center justify-center w-full px-4 py-3 text-sm font-bold text-white border border-transparent rounded-lg gap-x-2 sm:text-lg 
-                            @if($this->isFromWhatsApp) bg-lightYellow hover:bg-lightYellow/80 focus:bg-green-700
+                            @if($this->isFromWhatsApp) bg-lightYellow hover:bg-lightYellow/80 focus:bg-lightYellow/80
                             @else bg-lightYellow hover:bg-lightYellow/80 focus:bg-lightYellow/80
                             @endif
                             disabled:opacity-50 disabled:pointer-events-none">
