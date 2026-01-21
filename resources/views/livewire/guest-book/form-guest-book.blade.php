@@ -1,10 +1,39 @@
-<div x-data="{ pekerjaan: '{{ $pekerjaan }}',
-             jenisKelamin: '{{ $jenis_kelamin }}',
-               tujuanLainnya: false,
-               isFromWA: {{ $this->isFromWhatsApp ? 'true' : 'false' }} 
-               }" @pekerjaan-changed.window="pekerjaan = $event.detail; $wire.set('pekerjaan', pekerjaan)"
-    @jenis_kelamin-changed.window="jenisKelamin = $event.detail; $wire.set('jenis_kelamin', jenisKelamin)"
-    @tujuan_kunjungan-changed.window="tujuanKunjungan = $event.detail;if(tujuanKunjungan.includes('lainnya')) {tujuanLainnya = true;} else {tujuanLainnya = false;}; $wire.set('tujuan_kunjungan', tujuanKunjungan)">
+<div 
+    x-data="{
+        pekerjaan: '{{ $pekerjaan }}',
+        jenisKelamin: '{{ $jenis_kelamin }}',
+        tujuanLainnya: false,
+        isFromWA: {{ $this->isFromWhatsApp ? 'true' : 'false' }}
+    }"
+
+    @pekerjaan-changed.window="
+        pekerjaan = $event.detail;
+        $nextTick(() => {
+            $wire.set('pekerjaan', pekerjaan);
+        });
+    "
+
+    @jenis_kelamin-changed.window="
+        jenisKelamin = $event.detail;
+        $nextTick(() => {
+            $wire.set('jenis_kelamin', jenisKelamin);
+        });
+    "
+
+    @tujuan_kunjungan-changed.window="
+        tujuanKunjungan = $event.detail;
+
+        if (tujuanKunjungan.includes('lainnya')) {
+            tujuanLainnya = true;
+        } else {
+            tujuanLainnya = false;
+        }
+
+        $nextTick(() => {
+            $wire.set('tujuan_kunjungan', tujuanKunjungan);
+        });
+    "
+>
 
     <!-- ========================= -->
     <!-- BADGE SUMBER TAMU -->
