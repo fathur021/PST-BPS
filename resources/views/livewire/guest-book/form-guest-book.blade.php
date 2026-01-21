@@ -29,7 +29,7 @@
     </div>
 
     <div>
-        <h2 class="block text-4xl font-bold leading-7 text-grey lg:hidden">Buku Tamus</h2>
+        <h2 class="block text-4xl font-bold leading-7 text-grey lg:hidden">Buku Tamu</h2>
 
         <div
             class="mt-5 space-y-8 border-b lg:mt-0 border-gray-900/10 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
